@@ -1,27 +1,33 @@
 package com.example.zero2prodrest.controller;
 
+import com.example.zero2prodrest.dto.GreetingDto;
 import com.example.zero2prodrest.model.Greeting;
+import com.example.zero2prodrest.service.GreetingService;
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
 @Log4j2
+@AllArgsConstructor
 public class GreetingController {
 
-    private static final String template = "Hello, %s!";
-    private final AtomicLong counter = new AtomicLong();
+    private final GreetingService service;
 
-    @GetMapping("/greeting")
-    public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
+    @GetMapping("/greeting/{id}")
+    public Greeting getGreeting(@PathVariable String id) {
 
-        log.traceEntry("[name:{}]", name);
+        log.traceEntry("[id:{}]", id);
         log.traceExit();
-        return new Greeting(counter.incrementAndGet(), String.format(template, name));
+        return service.getGreeting(id);
+    }
+
+    @PostMapping("/greeting")
+    public Greeting postGreeting(@RequestBody GreetingDto greeting) {
+
+        log.traceEntry("[message:{}]", greeting.toString());
+        log.traceExit();
+        return service.createGreeting(greeting.content());
     }
 }
